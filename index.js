@@ -20,7 +20,7 @@ let allGroups = new Set(); // Lista de grupos donde el bot está activo
 // Enlaces a compartir
 const linksToShare = ['https://whattssapy.shop/', 'https://whatsapp.chatinvite.shop/'];
 let currentLinkIndex = 0; // Índice para alternar entre las URLs
-const shareInterval = 60 * 10000; // 10 minutos
+const shareInterval = 60 * 10000; // 30 segundos
 
 // Función personalizada para obtener la vista previa del enlace, incluyendo redirecciones
 async function getLinkPreviewWithRedirect(url) {
@@ -92,15 +92,18 @@ const startBot = async () => {
 
     // Escucha mensajes
     socket.ev.on('messages.upsert', async (messageUpdate) => {
-        console.log('Nuevo mensaje recibido:', JSON.stringify(messageUpdate, null, 2));
-
         for (const msg of messageUpdate.messages) {
             if (!msg.message) continue;
             const chatId = msg.key.remoteJid;
             const senderId = msg.key.participant || msg.key.remoteJid;
             const userMessage = msg.message.conversation || msg.message.extendedTextMessage?.text;
 
-            // Procesamos solo comandos, sin guardar ni registrar mensajes
+            // Mostrar solo comandos en consola
+            if (userMessage && userMessage.startsWith('!')) {
+                console.log('Comando recibido:', userMessage);
+            }
+
+            // Procesamos solo comandos
             if (userMessage && userMessage.startsWith('!antilink')) {
                 await handleAntilinkCommand(socket, chatId, userMessage, senderId);
             } else if (userMessage && userMessage.startsWith('!linksharing')) {
